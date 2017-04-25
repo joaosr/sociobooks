@@ -1,0 +1,18 @@
+<tr>
+  <th><a id="title" href="#">Title</a></th>
+  <th><a id="subtitle" href="#">Subtitle</a></th>
+  <th><a id="authors" href="#">Authors</a></th>
+  <th><a id="date" href="#">Date of publication</a></th>
+</tr>
+<% _.each(books, function(book) { %>
+  <tr>
+    <td><a href="#/book/<%- book.id %>"><%- book.title %></a></td>
+    <td><%- book.subtitle %></td>
+    <td>
+      <% _.each(book.authors, function(author) { %>
+        <%- author %>,
+      <% }) %>
+    </td>
+    <td><%- book.date_publication %></td>
+  </tr>
+<% }) %>
