@@ -78,18 +78,28 @@ var Layout = Marionette.LayoutView.extend({
     this.sortBooks("date_publication");
   },
   sortBooks: function(key){
-    this.model.attributes.books.sort(function (a, b) {
-      if (!a[key]) {
-        return 1;
+    var sort;
+    this.sortBooksAsc = this.sortBooksAsc || false;
+
+    if(this.sortBooksAsc){
+      sort = function (a, b) {
+        if(a[key] == undefined) {
+          return 1;
+        }
+        return a[key].localeCompare(b[key]);
       }
-      if (a[key] > b[key]) {
-        return 1;
-      }
-      if (a[key] < b[key]) {
-        return -1;
-      }
-      return 0;
-    });
+      this.sortBooksAsc = false;
+    }else{
+      sort = function (a, b) {
+        if(b[key] == undefined) {
+          return 1;
+        }
+        return b[key].localeCompare(a[key]);
+      };
+      this.sortBooksAsc = true;
+    }
+
+    this.model.attributes.books.sort(sort);
     this.triggerMethod('show');
   },
   onChangePage: function(number){

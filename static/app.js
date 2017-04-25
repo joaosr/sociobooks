@@ -36,15 +36,18 @@ var BooksModel = Backbone.Model.extend({
       var message = MESSAGE_BOOKS_NOT_FOUND;
 
       for(var item  in result.items){
-        books.push(
-          {
-            id: result.items[item].id,
-            title: result.items[item].volumeInfo.title,
-            subtitle: result.items[item].volumeInfo.subtitle,
-            authors: result.items[item].volumeInfo.authors,
-            date_publication: result.items[item].volumeInfo.publishedDate,
-          }
-        );
+        var book = {
+          id: result.items[item].id,
+          title: result.items[item].volumeInfo.title,
+          subtitle: result.items[item].volumeInfo.subtitle,
+          authors: '',
+          date_publication: result.items[item].volumeInfo.publishedDate,
+        };
+
+        if(result.items[item].volumeInfo.authors){
+          book['authors'] = result.items[item].volumeInfo.authors.toString();
+        }
+        books.push(book);
       }
 
       if(result.totalItems > 0){
@@ -188,13 +191,9 @@ __p+='\n  <tr>\n    <td><a href="#/book/'+
 ((__t=( book.title ))==null?'':_.escape(__t))+
 '</a></td>\n    <td>'+
 ((__t=( book.subtitle ))==null?'':_.escape(__t))+
-'</td>\n    <td>\n      ';
- _.each(book.authors, function(author) { 
-__p+='\n        '+
-((__t=( author ))==null?'':_.escape(__t))+
-',\n      ';
- }) 
-__p+='\n    </td>\n    <td>'+
+'</td>\n    <td>'+
+((__t=( book.authors ))==null?'':_.escape(__t))+
+'</td>\n    <td>'+
 ((__t=( book.date_publication ))==null?'':_.escape(__t))+
 '</td>\n  </tr>\n';
  }) 
@@ -313,18 +312,28 @@ var Layout = Marionette.LayoutView.extend({
     this.sortBooks("date_publication");
   },
   sortBooks: function(key){
-    this.model.attributes.books.sort(function (a, b) {
-      if (!a[key]) {
-        return 1;
+    var sort;
+    this.sortBooksAsc = this.sortBooksAsc || false;
+
+    if(this.sortBooksAsc){
+      sort = function (a, b) {
+        if(a[key] == undefined) {
+          return 1;
+        }
+        return a[key].localeCompare(b[key]);
       }
-      if (a[key] > b[key]) {
-        return 1;
-      }
-      if (a[key] < b[key]) {
-        return -1;
-      }
-      return 0;
-    });
+      this.sortBooksAsc = false;
+    }else{
+      sort = function (a, b) {
+        if(b[key] == undefined) {
+          return 1;
+        }
+        return b[key].localeCompare(a[key]);
+      };
+      this.sortBooksAsc = true;
+    }
+
+    this.model.attributes.books.sort(sort);
     this.triggerMethod('show');
   },
   onChangePage: function(number){

@@ -8,11 +8,7 @@
   <tr>
     <td><a href="#/book/<%- book.id %>"><%- book.title %></a></td>
     <td><%- book.subtitle %></td>
-    <td>
-      <% _.each(book.authors, function(author) { %>
-        <%- author %>,
-      <% }) %>
-    </td>
+    <td><%- book.authors %></td>
     <td><%- book.date_publication %></td>
   </tr>
 <% }) %>

@@ -10,15 +10,18 @@ var BooksModel = Backbone.Model.extend({
       var message = MESSAGE_BOOKS_NOT_FOUND;
 
       for(var item  in result.items){
-        books.push(
-          {
-            id: result.items[item].id,
-            title: result.items[item].volumeInfo.title,
-            subtitle: result.items[item].volumeInfo.subtitle,
-            authors: result.items[item].volumeInfo.authors,
-            date_publication: result.items[item].volumeInfo.publishedDate,
-          }
-        );
+        var book = {
+          id: result.items[item].id,
+          title: result.items[item].volumeInfo.title,
+          subtitle: result.items[item].volumeInfo.subtitle,
+          authors: '',
+          date_publication: result.items[item].volumeInfo.publishedDate,
+        };
+
+        if(result.items[item].volumeInfo.authors){
+          book['authors'] = result.items[item].volumeInfo.authors.toString();
+        }
+        books.push(book);
       }
 
       if(result.totalItems > 0){
